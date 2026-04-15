@@ -1,22 +1,30 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useLayoutEffect } from "react";
 import friendsData from "../../public/friends.json";
 
 const AppContext = createContext();
 
-const loadSavedTimeline = () => {
-    try {
-        const saved = localStorage.getItem("timeline");
-        return saved ? JSON.parse(saved) : [];
-    } catch (error) {
-        return [];
-    }
-}
+// const loadSavedTimeline = () => {
+//     try {
+//         const saved = localStorage.getItem("timeline");
+//         return saved ? JSON.parse(saved) : [];
+//     } catch (error) {
+//         return [];
+//     }
+// }
 
 export function AppProvider({ children }) {
     const [friends] = useState(friendsData);
 
-    const [timeline, setTimeline] = useState(loadSavedTimeline);
+    const [timeline, setTimeline] = useState([]);
+
+    useLayoutEffect(() => {
+        const saved = localStorage.getItem("timeline");
+        
+        if (saved) {
+            setTimeline(JSON.parse(saved))
+        }
+    }, []);
 
     const addEntry = (friendId, friendName, type) => {
         const newData = {

@@ -4,6 +4,7 @@ import { Archive, ArrowLeft, BellRing, Edit3, History, MessageSquare, Phone, Tra
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react"
+import { toast, ToastContainer } from "react-toastify";
 
 const actions = [
     {
@@ -30,7 +31,7 @@ const actions = [
 ];
 
 function FriendDetailsPage({ params }) {
-    const { friends, timeline } = useApp();
+    const { friends, timeline, addEntry } = useApp();
     const { friendName } = React.use(params);
     const decodedName = decodeURIComponent(friendName);
     const router = useRouter();
@@ -39,6 +40,36 @@ function FriendDetailsPage({ params }) {
     console.log(decodedName);
 
     const friend = friends.find(friend => friend.name === decodedName);
+
+    const history = timeline.filter(entry => entry.friendName === decodedName);
+
+
+    const handleCall = (friendId, friendName) => {
+        addEntry(friendId, friendName, "Phone Call");
+
+        toast.success("Call initiated!", {
+            autoClose: 1000,
+            position: "top-right"
+        });
+    }
+
+    const handleText = (friendId, friendName) => {
+        addEntry(friendId, friendName, "Text Message");
+
+        toast.success("Text message sent!", {
+            autoClose: 1000,
+            position: "top-right"
+        });
+    }
+
+    const handleVideo = (friendId, friendName) => {
+        addEntry(friendId, friendName, "Video Call");
+
+        toast.success("Video call initiated!", {
+            autoClose: 1000,
+            position: "top-right"
+        });
+    }
 
     if (!friend) {
         return <div className="p-10 text-center">Friend not found!</div>;
@@ -131,17 +162,17 @@ function FriendDetailsPage({ params }) {
                         <div className="bg-white border border-[#e8e4df] p-6 rounded-2xl">
                             <h3 className="text-base font-semibold mb-5 text-[#2c2a27]">Quick Check-In</h3>
                             <div className="grid grid-cols-3 gap-3">
-                                <button className="flex flex-col items-center gap-2.5 py-6 bg-[#f0ece6] border border-[#d6d3d1] rounded-2xl hover:bg-[#dfead3] transition-all group cursor-pointer">
+                                <button onClick={() => handleCall(friend.id, friend.name)} className="flex flex-col items-center gap-2.5 py-6 bg-[#f0ece6] border border-[#d6d3d1] rounded-2xl hover:bg-[#dfead3] transition-all group cursor-pointer">
                                     <Phone size={20} className="text-[#5f5e5a] group-hover:text-[#3b6d11]" />
                                     <span className="font-medium text-[#5f5e5a] group-hover:text-[#3b6d11]">Call</span>
                                 </button>
 
-                                <button className="flex flex-col items-center gap-2.5 py-6 bg-[#f0ece6] border border-[#d6d3d1] rounded-2xl hover:bg-[#dfead3] transition-all group cursor-pointer">
+                                <button onClick={() => handleText(friend.id, friend.name)} className="flex flex-col items-center gap-2.5 py-6 bg-[#f0ece6] border border-[#d6d3d1] rounded-2xl hover:bg-[#dfead3] transition-all group cursor-pointer">
                                     <MessageSquare size={20} className="text-[#5f5e5a] group-hover:text-[#3b6d11]" />
                                     <span className="font-medium text-[#5f5e5a] group-hover:text-[#3b6d11]">Text</span>
                                 </button>
 
-                                <button className="flex flex-col items-center gap-2.5 py-6 bg-[#f0ece6] border border-[#d6d3d1] rounded-2xl hover:bg-[#dfead3] transition-all group cursor-pointer">
+                                <button onClick={() => handleVideo(friend.id, friend.name)} className="flex flex-col items-center gap-2.5 py-6 bg-[#f0ece6] border border-[#d6d3d1] rounded-2xl hover:bg-[#dfead3] transition-all group cursor-pointer">
                                     <Video size={22} className="text-[#5f5e5a] group-hover:text-[#3b6d11]" />
                                     <span className="font-medium text-[#5f5e5a] group-hover:text-[#3b6d11]">Video</span>
                                 </button>
@@ -156,29 +187,39 @@ function FriendDetailsPage({ params }) {
                                 </button>
                             </div>
 
-                            {timeline.length > 0 ? (
-                                <div className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 bg-[#f5f2ee] rounded-xl flex items-center justify-center text-[#888780] shrink-0">
-                                            <MessageSquare size={16} />
+                            <div className="divide-y divide-[#f1efe8]">
+                                {history.length > 0 ? (
+                                    history.map((item) => (
+                                        <div key={item.id} className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-10 h-10 bg-[#f5f2ee] rounded-xl flex items-center justify-center text-[#888780] shrink-0">
+                                                    {item.type === "Phone Call" && <Phone size={16} />}
+                                                    {item.type === "Text Message" && <MessageSquare size={16} />}
+                                                    {item.type === "Video Call" && <Video size={16} />}
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-sm text-[#2c2a27]">{item.type}</p>
+                                                    <p className="text-xs text-[#a89e94] mt-0.5">Interaction with {item.friendName}</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-[11px] text-[#b4b2a9] font-medium whitespace-nowrap ml-4">
+                                                {item.date}
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="font-medium text-sm text-[#2c2a27]">Text Message</p>
-                                            <p className="text-xs text-[#a89e94] mt-0.5">Asked for career advice and shared updates</p>
-                                        </div>
-                                    </div>
-                                    <div className="text-[11px] text-[#b4b2a9] font-medium whitespace-nowrap ml-4">Jan 28, 2026</div>
-                                </div>
-                            ) : (
-                                <p className="text-sm text-[#a89e94] text-center py-6">
-                                    No interactions yet
-                                </p>
-                            )}
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-[#a89e94] text-center py-6">
+                                        No interactions yet
+                                    </p>
+                                )}
+                            </div>
                         </div>
 
                     </div>
                 </div>
             </div>
+
+            <ToastContainer />
         </main>
     )
 }
