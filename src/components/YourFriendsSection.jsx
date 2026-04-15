@@ -1,9 +1,11 @@
+"use client"
 import Link from "next/link"
-import friendsData from '../../public/friends.json'
 import FriendCart from "./FriendCart";
-import { Slice } from "lucide-react";
+import { useApp } from "@/context/AppContext";
 
 function YourFriendsSection() {
+    const { friends } = useApp();
+
     return (
         <section className="py-16 px-6">
             <div className="max-w-7xl mx-auto">
@@ -16,7 +18,7 @@ function YourFriendsSection() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {friendsData?.slice(0, 12).map((friend) => (
+                    {friends?.slice(0, 12).map((friend) => (
                         <FriendCart key={friend.id} friend={friend} />
                     ))}
                 </div>

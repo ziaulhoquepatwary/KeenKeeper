@@ -1,10 +1,15 @@
+"use client"
+import { useApp } from '@/context/AppContext';
 import { AlertCircle, CheckCircle, MessageSquare, Users } from 'lucide-react';
 
+
 function StatsSection() {
+    const { friends } = useApp();
+
     const stats = [
         {
             label: 'Total Friends',
-            value: '42',
+            value: friends.length.toString(),
             icon: <Users className="text-blue-500" size={24} />,
             description: 'Connected in your circle'
         },

@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
-import friendsData from "@/public/friends.json";
+import friendsData from "../../public/friends.json";
 
 const AppContext = createContext();
 

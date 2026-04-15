@@ -4,11 +4,13 @@ import FriendCart from "@/components/FriendCart"
 import { Search } from "lucide-react"
 import friendsData from '../../../public/friends.json'
 import { useState } from "react";
+import { useApp } from "@/context/AppContext";
 
 function AllFriendsPage() {
+    const { friends } = useApp();
     const [searchTerm, setSearchTerm] = useState("");
 
-    const filteredFriends = friendsData.filter(friend =>
+    const filteredFriends = friends.filter(friend =>
         friend.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         friend.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
